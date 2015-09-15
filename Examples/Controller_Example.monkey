@@ -13,21 +13,29 @@ Function Main:Int()
 	
 	Local Gamepad:= New XInputDevice(0)
 	
-	Repeat
-		If (Gamepad.Detect()) Then
-			Print("Device packet received.")
-			
-			Local Buttons:= Gamepad.Buttons
-			
-			Print("Button state: " + Buttons)
-			
-			If (((Buttons & XINPUT_GAMEPAD_START) > 0) And ((Buttons & XINPUT_GAMEPAD_BACK) > 0)) Then
-				Exit
-			Endif
-		Endif
+	If (Gamepad.PluggedIn) Then
+		Print("Device found.")
 		
-		Delay(16)
-	Forever
+		Repeat
+			If (Gamepad.Detect()) Then
+				Local Buttons:= Gamepad.Buttons
+				
+				Print("Buttons: " + Buttons)
+				Print("Left: " + Gamepad.ThumbLX + ", " + Gamepad.ThumbLY)
+				Print("Right: " + Gamepad.ThumbRX + ", " + Gamepad.ThumbRY)
+				Print("Triggers: " + Gamepad.LeftTrigger + ", " + Gamepad.RightTrigger)
+				Print("------------------")
+				
+				If (((Buttons & XINPUT_GAMEPAD_START) > 0) And ((Buttons & XINPUT_GAMEPAD_BACK) > 0)) Then
+					Exit
+				Endif
+			Endif
+			
+			Delay(16)
+		Forever
+	Else
+		Print("Unable to find device.")
+	Endif
 	
 	XInputDeinit()
 	

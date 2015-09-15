@@ -109,6 +109,30 @@ Public
 			Return bbDevice.buttons()
 		End
 		
+		Method LeftTrigger:Int() Property
+			Return bbDevice.leftTrigger()
+		End
+		
+		Method RightTrigger:Int() Property
+			Return bbDevice.rightTrigger()
+		End
+		
+		Method ThumbLX:Int() Property
+			Return bbDevice.thumbLX()
+		End
+		
+		Method ThumbLY:Int() Property
+			Return bbDevice.thumbLY()
+		End
+		
+		Method ThumbRX:Int() Property
+			Return bbDevice.thumbRX()
+		End
+		
+		Method ThumbRY:Int() Property
+			Return bbDevice.thumbRY()
+		End
+		
 		' Fields:
 		Field bbDevice:BBXInputDevice
 	End
