@@ -1,5 +1,5 @@
 # xinput
-An XInput wrapper for the Monkey programming language.
+An XInput wrapper for the [Monkey programming language](https://github.com/blitz-research/monkey).
 
 ### Description:
 This module provides a "raw device" interface to the XInput API. This is not a replacement for Mojo's input functionality, but it could be used as a backend. Data is provided as it's read from XInput, so this isn't Mojo-compatible.
