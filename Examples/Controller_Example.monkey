@@ -5,7 +5,7 @@ Public
 ' Imports:
 Import xinput
 
-Import time
+Import brl.process
 
 ' Functions:
 Function Main:Int()
@@ -26,13 +26,20 @@ Function Main:Int()
 				Print("Triggers: " + Gamepad.LeftTrigger + ", " + Gamepad.RightTrigger)
 				Print("------------------")
 				
+				Local LMotor:= Int(Float(Gamepad.LeftTrigger / 255) * 65535)
+				Local RMotor:= Int(Float(Gamepad.RightTrigger / 255) * 65535)
+				
+				Gamepad.SetRumble(LMotor, RMotor)
+				
 				If (((Buttons & XINPUT_GAMEPAD_START) > 0) And ((Buttons & XINPUT_GAMEPAD_BACK) > 0)) Then
 					Exit
 				Endif
 			Endif
 			
-			Delay(16)
+			Sleep(16)
 		Forever
+		
+		Gamepad.ResetRumble()
 	Else
 		Print("Unable to find device.")
 	Endif

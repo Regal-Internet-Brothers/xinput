@@ -54,6 +54,9 @@ Public
 		' Methods:
 		Method detect:Bool()
 		
+		Method setMotors:Void(Left:Int, Right:Int)
+		Method resetMotors:Void()
+		
 		Method buttons:Int()
 		
 		Method leftTrigger:Int()
@@ -98,6 +101,18 @@ Public
 		' Methods:
 		Method Detect:Bool()
 			Return bbDevice.detect()
+		End
+		
+		Method SetRumble:Void(Left:Int, Right:Int)
+			bbDevice.setMotors(Left, Right)
+			
+			Return
+		End
+		
+		Method ResetRumble:Void()
+			bbDevice.resetMotors()
+			
+			Return
 		End
 		
 		' Properties:

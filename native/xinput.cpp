@@ -89,6 +89,9 @@ namespace xinput_external
 			// Methods:
 			bool detect();
 			
+			void setMotors(int left, int right);
+			void resetMotors();
+			
 			int buttons() const;
 			
 			int leftTrigger() const;
@@ -174,6 +177,25 @@ namespace xinput_external
 		
 		// Return the default response.
 		return false;
+	}
+	
+	void BBXInputDevice::setMotors(int left, int right)
+	{
+		XINPUT_VIBRATION vibration = XINPUT_VIBRATION();
+		
+		vibration.wLeftMotorSpeed = left;
+		vibration.wRightMotorSpeed = right;
+		
+		XInputSetState(userIndex, &vibration);
+		
+		return;
+	}
+	
+	void BBXInputDevice::resetMotors()
+	{
+		setMotors(0, 0);
+		
+		return;
 	}
 	
 	int BBXInputDevice::buttons() const
