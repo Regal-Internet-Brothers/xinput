@@ -24,6 +24,9 @@ Public
 	
 	' Constant variable(s):
 	
+	' General:
+	Global XUSER_MAX_COUNT:Int
+	
 	' Button macros (IMMUTABLE, DO NOT MODIFY):
 	Global XINPUT_GAMEPAD_DPAD_UP:Int
 	Global XINPUT_GAMEPAD_DPAD_DOWN:Int
@@ -48,14 +51,19 @@ Public
 	
 	' Classes:
 	Class BBXInputDevice="xinput_external::BBXInputDevice"
+		' Functions:
+		Function devicePluggedIn:Bool(Index:Int, Force:Bool=False)
+		
 		' Constructor(s):
-		Method init:Bool(Index:Int)="init"
+		Method init:Bool(Index:Int, Force:Bool=False)
 		
 		' Methods:
 		Method detect:Bool()
 		
 		Method setMotors:Void(Left:Int, Right:Int)
 		Method resetMotors:Void()
+		
+		Method pluggedIn:Bool()
 		
 		Method buttons:Int()
 		
@@ -69,7 +77,7 @@ Public
 		Method thumbRY:Int()
 		
 		' Fields:
-		Field pluggedIn:Bool
+		' Nothing so far.
 	End
 	
 	' Functions:
@@ -80,6 +88,11 @@ Public
 	
 	' Monkey:
 	Class XInputDevice
+		' Functions:
+		Function DevicePluggedIn:Bool(Index:Int, Force:Bool=False)
+			Return BBXInputDevice.devicePluggedIn(Index, Force)
+		End
+		
 		' Constructor(s) (Public):
 		Method New(Index:Int)
 			bbDevice = New BBXInputDevice()
@@ -117,7 +130,7 @@ Public
 		
 		' Properties:
 		Method PluggedIn:Bool() Property
-			Return bbDevice.pluggedIn
+			Return bbDevice.pluggedIn()
 		End
 		
 		Method Buttons:Int() Property

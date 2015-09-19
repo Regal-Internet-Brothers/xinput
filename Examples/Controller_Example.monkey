@@ -13,6 +13,12 @@ Function Main:Int()
 	
 	Local Gamepad:= New XInputDevice(0)
 	
+	For Local I:= 0 Until XUSER_MAX_COUNT
+		If (XInputDevice.DevicePluggedIn(I)) Then
+			Print("Device["+I+"]: Available")
+		Endif
+	Next
+	
 	If (Gamepad.PluggedIn) Then
 		Print("Device found.")
 		

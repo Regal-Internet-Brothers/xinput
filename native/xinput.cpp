@@ -72,6 +72,10 @@ namespace xinput_external
 	class BBXInputDevice : public Object
 	{
 		public:
+			// Functions:
+			static bool devicePluggedIn(XINPUT_CAPABILITIES* capabilities, int index, bool force=false);
+			static bool devicePluggedIn(int index, bool force=false);
+			
 			// Fields:
 			int userIndex; // DWORD
 			
@@ -79,18 +83,20 @@ namespace xinput_external
 			XINPUT_CAPABILITIES capabilities;
 			
 			// Booleans / Flags:
-			bool pluggedIn;
+			bool* deviceIn;
 			
 			// Constructor(s):
 			BBXInputDevice();
 			
-			virtual bool init(int index);
+			virtual bool init(int index, bool force=false);
 			
 			// Methods:
 			bool detect();
 			
 			void setMotors(int left, int right);
 			void resetMotors();
+			
+			bool pluggedIn() const;
 			
 			int buttons() const;
 			
@@ -118,7 +124,7 @@ namespace xinput_external
 	// Global variable(s):
 	HMODULE xInputModule;
 	
-	bool deviceStatus[XUSER_MAX_COUNT];
+	bool deviceStatus[XUSER_MAX_COUNT]; // 4
 	
 	// Functions pointers:
 	_XInputEnable_t _XInputEnable;
@@ -131,33 +137,65 @@ namespace xinput_external
 	
 	// BBXInputDevice:
 	
+	// Functions:
+	bool BBXInputDevice::devicePluggedIn(XINPUT_CAPABILITIES* capabilities, int index, bool force)
+	{
+		// Check for errors:
+		if (index < 0 || index > XUSER_MAX_COUNT)
+		{
+			return false;
+		}
+		
+		if (force || !deviceStatus[index])
+		{
+			//*capabilities = XINPUT_CAPABILITIES();
+			
+			if (XInputGetCapabilities((DWORD)index, XINPUT_FLAG_GAMEPAD, capabilities) != ERROR_DEVICE_NOT_CONNECTED)
+			{
+				// If for some reason we were given a non-gamepad device, stop executing:
+				if (capabilities->Type != XINPUT_DEVTYPE_GAMEPAD)
+				{
+					return false;
+				}
+				
+				deviceStatus[index] = true;
+			}
+			else
+			{
+				return false; // response = false;
+			}
+		}
+		
+		// Return the default response.
+		return true;
+	}
+	
+	bool BBXInputDevice::devicePluggedIn(int index, bool force)
+	{
+		XINPUT_CAPABILITIES capabilities = XINPUT_CAPABILITIES();
+		
+		return devicePluggedIn(&capabilities, index, force);
+	}
+	
 	// Constructor(s):
 	BBXInputDevice::BBXInputDevice()
-		: userIndex(-1), pluggedIn(false), state(), capabilities()
+		: userIndex(-1), deviceIn(NULL), state(), capabilities() // nullptr
 	{
 		// Nothing so far.
 	}
 	
-	bool BBXInputDevice::init(int index)
+	bool BBXInputDevice::init(int index, bool force)
 	{
-		//capabilities = XINPUT_CAPABILITIES();
-		
-		if (XInputGetCapabilities((DWORD)index, XINPUT_FLAG_GAMEPAD, &capabilities) != ERROR_DEVICE_NOT_CONNECTED)
+		if (!devicePluggedIn(&capabilities, index, force))
 		{
-			// If for some reason we were given a non-gamepad device, stop executing:
-			if (capabilities.Type != XINPUT_DEVTYPE_GAMEPAD)
-			{
-				return false;
-			}
-			
-			pluggedIn = true;
-			userIndex = index;
-			
-			return true;
+			return false;
 		}
 		
+		deviceIn = &deviceStatus[index]; // (deviceStatus + index);
+		userIndex = index;
+		
 		// Return the default response.
-		return false;
+		return true;
 	}
 	
 	// Methods:
@@ -196,6 +234,16 @@ namespace xinput_external
 		setMotors(0, 0);
 		
 		return;
+	}
+	
+	bool BBXInputDevice::pluggedIn() const
+	{
+		if (deviceIn == NULL) // nullptr
+		{
+			return false;
+		}
+		
+		return *deviceIn;
 	}
 	
 	int BBXInputDevice::buttons() const
