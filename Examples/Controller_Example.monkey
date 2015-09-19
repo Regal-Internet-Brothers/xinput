@@ -2,14 +2,25 @@ Strict
 
 Public
 
+' Preprocessor related:
+'#XINPUT_DEMO_CLEAR_STDOUT = True
+
 ' Imports:
 Import xinput
+
+#If XINPUT_DEMO_CLEAR_STDOUT
+	Import ioutil.stdio
+#End
 
 Import brl.process
 
 ' Functions:
 Function Main:Int()
 	XInputInit()
+	
+	#If XINPUT_DEMO_CLEAR_STDOUT
+		Local Console:= New StandardIOStream()
+	#End
 	
 	Local Gamepad:= New XInputDevice(0)
 	
@@ -24,6 +35,10 @@ Function Main:Int()
 		
 		Repeat
 			If (Gamepad.Detect()) Then
+				#If XINPUT_DEMO_CLEAR_STDOUT
+					Console.Clear()
+				#End
+				
 				Local Buttons:= Gamepad.Buttons
 				
 				Print("Buttons: " + Buttons)
