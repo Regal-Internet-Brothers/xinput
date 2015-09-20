@@ -474,6 +474,11 @@ namespace xinput_external
 	
 	void XInputInit()
 	{
+		if (XInputModule != NULL)
+		{
+			return;
+		}
+		
 		XInputModule = link();
 		
 		XInputEnable(TRUE);
