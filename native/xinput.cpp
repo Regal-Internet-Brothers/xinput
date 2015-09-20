@@ -80,6 +80,7 @@ namespace xinput_external
 			int userIndex; // DWORD
 			
 			XINPUT_STATE state;
+			XINPUT_STATE previousState;
 			XINPUT_CAPABILITIES capabilities;
 			
 			// Booleans / Flags:
@@ -99,6 +100,7 @@ namespace xinput_external
 			bool pluggedIn() const;
 			
 			int buttons() const;
+			int previousButtons() const;
 			
 			int leftTrigger() const;
 			int rightTrigger() const;
@@ -179,7 +181,7 @@ namespace xinput_external
 	
 	// Constructor(s):
 	BBXInputDevice::BBXInputDevice()
-		: userIndex(-1), deviceIn(NULL), state(), capabilities() // nullptr
+		: userIndex(-1), deviceIn(NULL), state(), previousState(), capabilities() // nullptr
 	{
 		// Nothing so far.
 	}
@@ -201,13 +203,13 @@ namespace xinput_external
 	// Methods:
 	bool BBXInputDevice::detect()
 	{
-		DWORD previousPacket = state.dwPacketNumber;
+		previousState = state;
 		
 		state = XINPUT_STATE();
 		
 		if (XInputGetStateEx((DWORD)userIndex, &state) == ERROR_SUCCESS)
 		{
-			if (state.dwPacketNumber != previousPacket)
+			if (state.dwPacketNumber != previousState.dwPacketNumber)
 			{
 				return true;
 			}
@@ -249,6 +251,11 @@ namespace xinput_external
 	int BBXInputDevice::buttons() const
 	{
 		return (int)state.Gamepad.wButtons;
+	}
+	
+	int BBXInputDevice::previousButtons() const
+	{
+		return (int)previousState.Gamepad.wButtons;
 	}
 	
 	int BBXInputDevice::leftTrigger() const

@@ -24,10 +24,13 @@ Public
 	
 	' Constant variable(s):
 	
-	' General:
+	' Macros (IMMUTABLE, DO NOT MODIFY):
 	Global XUSER_MAX_COUNT:Int
 	
-	' Button macros (IMMUTABLE, DO NOT MODIFY):
+	Global XINPUT_GAMEPAD_THUMB_MAX:Int
+	Global XINPUT_GAMEPAD_TRIGGER_MAX:Int
+	
+	' Buttons:
 	Global XINPUT_GAMEPAD_DPAD_UP:Int
 	Global XINPUT_GAMEPAD_DPAD_DOWN:Int
 	Global XINPUT_GAMEPAD_DPAD_LEFT:Int
@@ -66,6 +69,7 @@ Public
 		Method pluggedIn:Bool()
 		
 		Method buttons:Int()
+		Method previousButtons:Int()
 		
 		Method leftTrigger:Int()
 		Method rightTrigger:Int()
@@ -116,6 +120,14 @@ Public
 			Return bbDevice.detect()
 		End
 		
+		Method ButtonDown:Bool(Button:Int)
+			Return ((Buttons & Button) > 0)
+		End
+		
+		Method ButtonHit:Bool(Button:Int)
+			Return (((PreviousButtons & Button) > 0) And Not ButtonDown)
+		End
+		
 		Method SetRumble:Void(Left:Int, Right:Int)
 			bbDevice.setMotors(Left, Right)
 			
@@ -135,6 +147,10 @@ Public
 		
 		Method Buttons:Int() Property
 			Return bbDevice.buttons()
+		End
+		
+		Method PreviousButtons:Int() Property
+			Return bbDevice.previousButtons()
 		End
 		
 		Method LeftTrigger:Int() Property

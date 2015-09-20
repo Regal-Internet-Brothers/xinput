@@ -20,6 +20,9 @@
 // Flags used with 'XINPUT_CAPABILITIES':
 #define XINPUT_CAPS_VOICE_SUPPORTED 0x0004
 
+// Flags used with 'XInputGetCapabilities':
+#define XINPUT_FLAG_GAMEPAD 0x00000001
+
 // Button macros (Bitwise):
 #define XINPUT_GAMEPAD_DPAD_UP          0x0001
 #define XINPUT_GAMEPAD_DPAD_DOWN        0x0002
@@ -41,8 +44,9 @@
 #define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 #define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
 
-// Flags used with 'XInputGetCapabilities':
-#define XINPUT_FLAG_GAMEPAD             0x00000001
+// Other:
+#define XINPUT_GAMEPAD_THUMB_MAX 32768
+#define XINPUT_GAMEPAD_TRIGGER_MAX 255
 
 // User-index definitions:
 #define XUSER_MAX_COUNT 4

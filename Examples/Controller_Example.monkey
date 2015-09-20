@@ -47,8 +47,16 @@ Function Main:Int()
 				Print("Triggers: " + Gamepad.LeftTrigger + ", " + Gamepad.RightTrigger)
 				Print("------------------")
 				
-				Local LMotor:= Int(Float(Gamepad.LeftTrigger / 255) * 65535)
-				Local RMotor:= Int(Float(Gamepad.RightTrigger / 255) * 65535)
+				Local LMotor:Int ' = Int(Float(Gamepad.LeftTrigger / XINPUT_GAMEPAD_TRIGGER_MAX) * 65535)
+				Local RMotor:Int ' = Int(Float(Gamepad.RightTrigger / XINPUT_GAMEPAD_TRIGGER_MAX) * 65535)
+				
+				If (Gamepad.LeftTrigger = XINPUT_GAMEPAD_TRIGGER_MAX) Then
+					LMotor = 65535
+				Endif
+				
+				If (Gamepad.RightTrigger = XINPUT_GAMEPAD_TRIGGER_MAX) Then
+					RMotor = 65535
+				Endif
 				
 				Gamepad.SetRumble(LMotor, RMotor)
 				
