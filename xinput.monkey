@@ -39,9 +39,11 @@ Public
 	
 	' Macros (IMMUTABLE, DO NOT MODIFY):
 	Global XUSER_MAX_COUNT:Int
+	Global XUSER_INDEX_ANY:Int
 	
 	Global XINPUT_GAMEPAD_THUMB_MAX:Int
 	Global XINPUT_GAMEPAD_TRIGGER_MAX:Int
+	Global XINPUT_GAMEPAD_RUMBLE_MAX:Int
 	
 	' Buttons:
 	Global XINPUT_GAMEPAD_DPAD_UP:Int
@@ -69,9 +71,10 @@ Public
 	Class BBXInputDevice="xinput_external::BBXInputDevice"
 		' Functions:
 		Function devicePluggedIn:Bool(Index:Int, Force:Bool=False)
+		Function forceResetVibration:Void()
 		
 		' Constructor(s):
-		Method init:Bool(Index:Int, Force:Bool=False)
+		Method init:Bool(Index:Int=XUSER_INDEX_ANY, Force:Bool=False)
 		
 		' Methods:
 		Method detect:Bool()
@@ -122,6 +125,12 @@ Public
 			Return BBXInputDevice.devicePluggedIn(Index, Force)
 		End
 		
+		Function ForceResetVibration:Void()
+			BBXInputDevice.forceResetVibration()
+			
+			Return
+		End
+		
 		' Mojo compatibility API:
 		#If XINPUT_MOJO_COMPATIBILITY_API
 			' This command converts 'Value' into a ratio usign 'Max'. (Used internally)
@@ -168,23 +177,14 @@ Public
 			End
 		#End
 		
-		' Constructor(s) (Public):
-		Method New(Index:Int)
+		' Constructor(s):
+		Method New(Index:Int=XUSER_INDEX_ANY)
 			bbDevice = New BBXInputDevice()
 			
 			If (Not bbDevice.init(Index)) Then
 				Throw New XInput_InvalidDeviceParameters(Self)
 			Endif
 		End
-		
-		' Constructor(s) (Private):
-		Private
-		
-		Method New()
-			' Blank implementation; reserved.
-		End
-		
-		Public
 		
 		' Methods:
 		Method Detect:Bool()

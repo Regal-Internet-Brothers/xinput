@@ -23,6 +23,11 @@
 
 #define XINPUT_COMPATIBILITY_DLL "xinput9_1_0.dll"
 
+// Other:
+#define XINPUT_GAMEPAD_THUMB_MAX 32768
+#define XINPUT_GAMEPAD_TRIGGER_MAX 255
+#define XINPUT_GAMEPAD_RUMBLE_MAX 65535
+
 // Buttons:
 #define XINPUT_GAMEPAD_GUIDE			0x0400
 
@@ -76,6 +81,8 @@ namespace xinput_external
 			static bool devicePluggedIn(XINPUT_CAPABILITIES* capabilities, int index, bool force=false);
 			static bool devicePluggedIn(int index, bool force=false);
 			
+			static void forceResetVibration();
+			
 			// Fields:
 			int userIndex; // DWORD
 			
@@ -84,12 +91,12 @@ namespace xinput_external
 			XINPUT_CAPABILITIES capabilities;
 			
 			// Booleans / Flags:
-			bool* deviceIn;
+			int deviceIn; // unsigned
 			
 			// Constructor(s):
 			BBXInputDevice();
 			
-			virtual bool init(int index, bool force=false);
+			virtual bool init(int index=XUSER_INDEX_ANY, bool force=false);
 			
 			// Methods:
 			bool detect();
@@ -124,9 +131,10 @@ namespace xinput_external
 namespace xinput_external
 {
 	// Global variable(s):
-	HMODULE xInputModule;
+	HMODULE XInputModule;
 	
 	bool deviceStatus[XUSER_MAX_COUNT]; // 4
+	bool hadRealRepresentative[XUSER_MAX_COUNT]; // 4
 	
 	// Functions pointers:
 	_XInputEnable_t _XInputEnable;
@@ -179,22 +187,56 @@ namespace xinput_external
 		return devicePluggedIn(&capabilities, index, force);
 	}
 	
+	void BBXInputDevice::forceResetVibration()
+	{
+		XINPUT_VIBRATION vibration = XINPUT_VIBRATION();
+		
+		for (DWORD dwUserIndex = 0; dwUserIndex < XUSER_MAX_COUNT; dwUserIndex++)
+		{
+			if (deviceStatus[dwUserIndex])
+			{
+				XInputSetState(dwUserIndex, &vibration);
+			}
+		}
+		
+		return;
+	}
+	
 	// Constructor(s):
 	BBXInputDevice::BBXInputDevice()
-		: userIndex(-1), deviceIn(NULL), state(), previousState(), capabilities() // nullptr
+		: userIndex(-1), deviceIn(-1), state(), previousState(), capabilities() // nullptr
 	{
 		// Nothing so far.
 	}
 	
 	bool BBXInputDevice::init(int index, bool force)
 	{
+		if (index == (int)XUSER_INDEX_ANY)
+		{
+			for (index = 0; index < XUSER_MAX_COUNT; index++)
+			{
+				if (devicePluggedIn(index) && !hadRealRepresentative[index])
+				{
+					break;
+				}
+			}
+			
+			// Check if we weren't able to find an empty slot:
+			if (index >= XUSER_MAX_COUNT)
+			{
+				index = 0;
+			}
+		}
+		
 		if (!devicePluggedIn(&capabilities, index, force))
 		{
 			return false;
 		}
 		
-		deviceIn = &deviceStatus[index]; // (deviceStatus + index);
+		deviceIn = index;
 		userIndex = index;
+		
+		hadRealRepresentative[index] = true; // deviceIn;
 		
 		// Return the default response.
 		return true;
@@ -240,12 +282,12 @@ namespace xinput_external
 	
 	bool BBXInputDevice::pluggedIn() const
 	{
-		if (deviceIn == NULL) // nullptr
+		if (deviceIn == -1)
 		{
 			return false;
 		}
 		
-		return *deviceIn;
+		return deviceStatus[deviceIn];
 	}
 	
 	int BBXInputDevice::buttons() const
@@ -432,7 +474,7 @@ namespace xinput_external
 	
 	void XInputInit()
 	{
-		xInputModule = link();
+		XInputModule = link();
 		
 		XInputEnable(TRUE);
 		
@@ -441,9 +483,15 @@ namespace xinput_external
 	
 	void XInputDeinit()
 	{
-		FreeLibrary(xInputModule);
+		if (XInputModule == NULL)
+			return;
 		
-		xInputModule = NULL;
+		// Ensure we don't still have vibrating controllers.
+		BBXInputDevice::forceResetVibration();
+		
+		FreeLibrary(XInputModule);
+		
+		XInputModule = NULL;
 		
 		// Function pointers:
 		_XInputEnable = NULL;
