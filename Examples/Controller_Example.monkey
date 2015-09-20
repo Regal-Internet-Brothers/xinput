@@ -3,6 +3,7 @@ Strict
 Public
 
 ' Preprocessor related:
+'#XINPUT_MOJO_COMPATIBILITY_API = False
 '#XINPUT_DEMO_CLEAR_STDOUT = True
 
 ' Imports:
@@ -10,6 +11,10 @@ Import xinput
 
 #If XINPUT_DEMO_CLEAR_STDOUT
 	Import ioutil.stdio
+#End
+
+#If XINPUT_MOJO_COMPATIBILITY_API
+	Import mojo.keycodes
 #End
 
 Import brl.process
@@ -42,9 +47,16 @@ Function Main:Int()
 				Local Buttons:= Gamepad.Buttons
 				
 				Print("Buttons: " + Buttons)
-				Print("Left: " + Gamepad.ThumbLX + ", " + Gamepad.ThumbLY)
-				Print("Right: " + Gamepad.ThumbRX + ", " + Gamepad.ThumbRY)
-				Print("Triggers: " + Gamepad.LeftTrigger + ", " + Gamepad.RightTrigger)
+				
+				#If Not XINPUT_MOJO_COMPATIBILITY_API
+					Print("Left: " + Gamepad.ThumbLX + ", " + Gamepad.ThumbLY)
+					Print("Right: " + Gamepad.ThumbRX + ", " + Gamepad.ThumbRY)
+					Print("Triggers: " + Gamepad.LeftTrigger + ", " + Gamepad.RightTrigger)
+				#Else
+					Print("Left: " + Gamepad.JoyX(0) + ", " + Gamepad.JoyY(0))
+					Print("Right: " + Gamepad.JoyX(1) + ", " + Gamepad.JoyY(1))
+					Print("Triggers: " + Gamepad.JoyZ(0) + ", " + Gamepad.JoyZ(1))
+				#End
 				Print("------------------")
 				
 				Local LMotor:Int ' = Int(Float(Gamepad.LeftTrigger / XINPUT_GAMEPAD_TRIGGER_MAX) * 65535)
@@ -60,9 +72,13 @@ Function Main:Int()
 				
 				Gamepad.SetRumble(LMotor, RMotor)
 				
-				If (((Buttons & XINPUT_GAMEPAD_START) > 0) And ((Buttons & XINPUT_GAMEPAD_BACK) > 0)) Then
-					Exit
-				Endif
+				#If Not XINPUT_MOJO_COMPATIBILITY_API
+					If (((Buttons & XINPUT_GAMEPAD_START) > 0) And ((Buttons & XINPUT_GAMEPAD_BACK) > 0)) Then
+				#Else
+					If (Gamepad.JoyDown(JOY_START) And Gamepad.JoyDown(JOY_BACK)) Then
+				#End
+						Exit
+					Endif
 			Endif
 			
 			Sleep(16)
