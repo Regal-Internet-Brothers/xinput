@@ -15,7 +15,7 @@
 	#include <XInput.h>
 #endif
 
-//#include <windows.h>
+#include <windef.h>
 
 // Macros:
 #define XINPUT_MAX_SUBVERSION 4
@@ -37,11 +37,11 @@ namespace xinput_external
 	// Typedefs:
 	
 	// Function types:
-	typedef VOID WINAPI  (*_XInputEnable_t)(BOOL);
-	typedef DWORD WINAPI (*_XInputSetState_t)(DWORD, PXINPUT_VIBRATION);
-	typedef DWORD WINAPI (*_XInputGetState_t)(DWORD, PXINPUT_STATE);
-	typedef DWORD WINAPI (*_XInputGetCapabilities_t)(DWORD, DWORD, PXINPUT_CAPABILITIES);
-	typedef DWORD WINAPI (*_XInputGetStateEx_t)(DWORD, PXINPUT_STATE);
+	typedef VOID (WINAPI *_XInputEnable_t)(BOOL);
+	typedef DWORD (WINAPI *_XInputSetState_t)(DWORD, PXINPUT_VIBRATION);
+	typedef DWORD (WINAPI *_XInputGetState_t)(DWORD, PXINPUT_STATE);
+	typedef DWORD (WINAPI *_XInputGetCapabilities_t)(DWORD, DWORD, PXINPUT_CAPABILITIES);
+	typedef DWORD (WINAPI *_XInputGetStateEx_t)(DWORD, PXINPUT_STATE);
 	
 	//typedef DWORD WINAPI (*XInputGetBatteryInformation_t)(DWORD, BYTE, PXINPUT_BATTERY_INFORMATION);
 	//typedef DWORD WINAPI (*XInputGetKeystroke_t)(DWORD, DWORD, PXINPUT_KEYSTROKE);

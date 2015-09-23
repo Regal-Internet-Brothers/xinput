@@ -3,6 +3,7 @@ Strict
 Public
 
 ' Preprocessor related:
+#GLFW_USE_MINGW = False
 '#XINPUT_MOJO_COMPATIBILITY_API = False
 '#XINPUT_DEMO_CLEAR_STDOUT = True
 
