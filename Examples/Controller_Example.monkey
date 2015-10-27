@@ -8,10 +8,10 @@ Public
 '#XINPUT_DEMO_CLEAR_STDOUT = True
 
 ' Imports:
-Import xinput
+Import regal.xinput
 
 #If XINPUT_DEMO_CLEAR_STDOUT
-	Import ioutil.stdio
+	Import regal.ioutil.stdio
 #End
 
 #If XINPUT_MOJO_COMPATIBILITY_API
